@@ -11,8 +11,8 @@ import java.util.List;
  * Created by Administrator on 2018/10/26.
  */
 @RestController
-@RequestMapping("/hello")
-public class HelloController {
+@RequestMapping("/json")
+public class JsonController {
     @RequestMapping("sayHello")
     public String sayHello(){
         Jedis jedis=new Jedis();
