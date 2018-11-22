@@ -83,6 +83,13 @@
             <version>3.3.6</version>
         </dependency>
 
+        <!--引入zkclient-->
+        <dependency>
+            <groupId>com.github.sgroschupf</groupId>
+            <artifactId>zkclient</artifactId>
+            <version>0.1</version>
+        </dependency>
+
     </dependencies>
 
     <build>

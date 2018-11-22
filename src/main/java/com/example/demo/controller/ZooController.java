@@ -1,12 +1,17 @@
 package com.example.demo.controller;
 
+import com.example.demo.util.ZkcilentUtil;
 import com.example.demo.util.ZookeeperConnection;
+import org.I0Itec.zkclient.IZkChildListener;
+import org.I0Itec.zkclient.IZkDataListener;
+import org.I0Itec.zkclient.ZkClient;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -20,7 +25,9 @@ public class ZooController {
      * 创建节点
      */
     ZooKeeper zooKeeper;
+    ZkClient zkClient;
     String path = "/test1";
+    String path2 = "/test2222";
 
     @RequestMapping("createZoo")
     public String createZoo() throws IOException, InterruptedException, KeeperException {
@@ -89,10 +96,80 @@ public class ZooController {
         return "/index";
     }
 
+    /**
+     * 修改数据
+     */
     @RequestMapping("setDataZoo")
     public String setDataZoo() throws IOException, InterruptedException, KeeperException {
         zooKeeper = ZookeeperConnection.connect("127.0.0.1");
         zooKeeper.setData(path, "999".getBytes(), zooKeeper.exists(path, true).getVersion());
+        return "/index";
+    }
+
+    /**
+     * 获取子节点
+     */
+    @RequestMapping("getChrildrenZoo")
+    public String getChrildrenZoo() throws IOException, InterruptedException, KeeperException {
+        zooKeeper = ZookeeperConnection.connect("127.0.0.1");
+        List<String> children = zooKeeper.getChildren(path, false);
+        System.out.println("children = " + children);
+        return "/index";
+    }
+
+    /** 创建节点*/
+    @RequestMapping("createZnode")
+    public String createZnodeZk() {
+        zkClient = ZkcilentUtil.getZkClient("127.0.0.1");
+//        zkClient.createEphemeral(path2,"111");//创建临时节点
+        zkClient.createPersistent(path2,"111");//创建永久节点
+        /** 设置子节点监听*/
+        zkClient.subscribeChildChanges(path2, new IZkChildListener() {
+            @Override
+            public void handleChildChange(String path, List<String> currentChrildren) throws Exception {
+                System.out.println("path = " + path);
+                System.out.println("currentChrildren = " + currentChrildren);
+            }
+        });
+        /** 设置数据监听*/
+        zkClient.subscribeDataChanges(path2, new IZkDataListener() {
+            @Override
+            public void handleDataChange(String path, Object data) throws Exception {
+                System.out.println("path = " + path+"改变了数据");
+                System.out.println("data = " + data);
+            }
+
+            @Override
+            public void handleDataDeleted(String path) throws Exception {
+                System.out.println("path = " + path+"删除了数据");
+            }
+        });
+        return "/index";
+    }
+
+    /** 获得子节点*/
+    @RequestMapping("getChrildrenZk")
+    public String getChrildrenZk(){
+        zkClient=ZkcilentUtil.getZkClient("127.0.0.1");
+        List<String> children = zkClient.getChildren(path);
+        System.out.println("children = " + children);
+        return "/index";
+    }
+
+    /** 获取节点数据*/
+    @RequestMapping("getDataZk")
+    public String getDataZk(){
+        zkClient = ZkcilentUtil.getZkClient("127.0.0.1");
+        String data = zkClient.readData(path2);
+        System.out.println("data = " + data);
+        return "/index";
+    }
+
+    /** 设置节点数据*/
+    @RequestMapping("setDataZk")
+    public String setDataZk(){
+        zkClient=ZkcilentUtil.getZkClient("127.0.0.1");
+        zkClient.writeData(path2,"222");
         return "/index";
     }
 }
