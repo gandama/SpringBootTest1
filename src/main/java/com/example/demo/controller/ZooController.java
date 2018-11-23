@@ -21,14 +21,16 @@ import java.util.concurrent.CountDownLatch;
 @RequestMapping("/zoo")
 public class ZooController {
 
-    /**
-     * 创建节点
-     */
     ZooKeeper zooKeeper;
     ZkClient zkClient;
     String path = "/test1";
     String path2 = "/test2222";
 
+    /**
+     * 创建节点
+     *
+     * create(String path, byte[] data, List<ACL> acl, CreateMode createMode)
+     */
     @RequestMapping("createZoo")
     public String createZoo() throws IOException, InterruptedException, KeeperException {
         zooKeeper = ZookeeperConnection.connect("127.0.0.1");
@@ -39,6 +41,8 @@ public class ZooController {
 
     /**
      * 判断节点是否存在
+     *
+     * exists(String path, boolean watcher)
      */
     @RequestMapping("existZoo")
     public String existZoo() throws IOException, InterruptedException, KeeperException {
@@ -54,6 +58,8 @@ public class ZooController {
 
     /**
      * 获取节点数据
+     *
+     * getData(String path, boolean watch, Stat stat)
      */
     @RequestMapping("getDataZoo")
     public String getDataZoo() throws IOException, InterruptedException, KeeperException {
@@ -66,6 +72,8 @@ public class ZooController {
 
     /**
      * 数据变更自动获取
+     *
+     * getData(String path, Watcher watcher, Stat stat)
      */
     @RequestMapping("getDataZoo2")
     public String getDataZoo2() throws IOException, InterruptedException, KeeperException {
@@ -98,6 +106,8 @@ public class ZooController {
 
     /**
      * 修改数据
+     *
+     * setData(String path, byte[] data, int version)
      */
     @RequestMapping("setDataZoo")
     public String setDataZoo() throws IOException, InterruptedException, KeeperException {
